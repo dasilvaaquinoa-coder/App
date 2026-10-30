@@ -1,0 +1,1162 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  Dumbbell, 
+  Calendar, 
+  TrendingUp, 
+  CheckCircle2, 
+  Circle, 
+  Play, 
+  Pause, 
+  RotateCcw, 
+  Plus, 
+  Edit2, 
+  Trash2, 
+  ChevronRight, 
+  Award, 
+  Clock, 
+  Zap,
+  Flame,
+  User,
+  Volume2,
+  VolumeX,
+  X,
+  Save,
+  Sparkles
+} from 'lucide-react';
+
+// --- DADOS INICIAIS PRÉ-CARREGADOS DO AQUINOÃ ---
+const INITIAL_WORKOUTS = {
+  A: {
+    id: 'A',
+    dayName: 'Segunda-feira',
+    shortDay: 'SEG',
+    focus: 'Quadríceps & Glúteos',
+    color: 'from-blue-600 to-cyan-500',
+    exercises: [
+      {
+        id: 'a1',
+        name: 'Agachamento Livre',
+        group: 'Quadríceps / Glúteo',
+        setsCount: 3,
+        sets: [
+          { weight: '22', reps: '12', done: false },
+          { weight: '50', reps: '10', done: false },
+          { weight: '58', reps: '6-8', done: false }
+        ]
+      },
+      {
+        id: 'a2',
+        name: 'Leg Press 45° Máquina Articulada',
+        group: 'Quadríceps',
+        setsCount: 4,
+        sets: [
+          { weight: '170', reps: '12', done: false },
+          { weight: '180', reps: '10', done: false },
+          { weight: '190', reps: '8-10', done: false },
+          { weight: '190', reps: '8-10', done: false }
+        ]
+      },
+      {
+        id: 'a3',
+        name: 'Cadeira Extensora',
+        group: 'Quadríceps',
+        setsCount: 4,
+        sets: [
+          { weight: '20', reps: '12', done: false },
+          { weight: '25', reps: '10', done: false },
+          { weight: '27', reps: '6-8', done: false },
+          { weight: '30', reps: 'RM', done: false }
+        ]
+      },
+      {
+        id: 'a4',
+        name: 'Afundo',
+        group: 'Quadríceps / Glúteo',
+        setsCount: 3,
+        sets: [
+          { weight: '10', reps: '10', done: false },
+          { weight: '10', reps: '10', done: false },
+          { weight: '10', reps: '10', done: false }
+        ]
+      }
+    ]
+  },
+  B: {
+    id: 'B',
+    dayName: 'Terça-feira',
+    shortDay: 'TER',
+    focus: 'Costas & Ombros',
+    color: 'from-emerald-600 to-teal-400',
+    exercises: [
+      {
+        id: 'b1',
+        name: 'Puxada Aberta Pronada',
+        group: 'Costas',
+        setsCount: 4,
+        sets: [
+          { weight: '41', reps: '12', done: false },
+          { weight: '43', reps: '10', done: false },
+          { weight: '45', reps: '6-8', done: false },
+          { weight: '46', reps: 'RM', done: false }
+        ]
+      },
+      {
+        id: 'b2',
+        name: 'Remada Baixa Unilateral',
+        group: 'Costas',
+        setsCount: 3,
+        sets: [
+          { weight: '10', reps: '12', done: false },
+          { weight: '15', reps: '10', done: false },
+          { weight: '16', reps: '6-8', done: false }
+        ]
+      },
+      {
+        id: 'b3',
+        name: 'Remada Baixa - Triângulo',
+        group: 'Costas',
+        setsCount: 3,
+        sets: [
+          { weight: '35', reps: '10-12', done: false },
+          { weight: '40', reps: '10-12', done: false },
+          { weight: '40', reps: '10-12', done: false }
+        ]
+      },
+      {
+        id: 'b4',
+        name: 'Pulldown - Corda Polia Alta',
+        group: 'Costas',
+        setsCount: 3,
+        sets: [
+          { weight: '26', reps: '12', done: false },
+          { weight: '27', reps: '8-10', done: false },
+          { weight: '30', reps: '6-8', done: false }
+        ]
+      },
+      {
+        id: 'b5',
+        name: 'Remada Curvada - Barra Supinada',
+        group: 'Costas',
+        setsCount: 3,
+        sets: [
+          { weight: '20', reps: '12', done: false },
+          { weight: '24', reps: '10', done: false },
+          { weight: '26', reps: '6-8', done: false }
+        ]
+      },
+      {
+        id: 'b6',
+        name: 'Desenvolvimento - Halter Sentado',
+        group: 'Ombro',
+        setsCount: 4,
+        sets: [
+          { weight: '20', reps: '12', done: false },
+          { weight: '24', reps: '8-10', done: false },
+          { weight: '24', reps: '8-10', done: false },
+          { weight: '24', reps: '8-10', done: false }
+        ]
+      },
+      {
+        id: 'b7',
+        name: 'Elevação Lateral - Polia',
+        group: 'Ombro',
+        setsCount: 3,
+        sets: [
+          { weight: '5', reps: '10-12', done: false },
+          { weight: '7', reps: '8-10', done: false },
+          { weight: '7', reps: '6-8', done: false }
+        ]
+      },
+      {
+        id: 'b8',
+        name: 'Elevação Frontal',
+        group: 'Ombro',
+        setsCount: 3,
+        sets: [
+          { weight: '8', reps: '10-12', done: false },
+          { weight: '8', reps: '10-12', done: false },
+          { weight: '8', reps: '10-12', done: false }
+        ]
+      }
+    ]
+  },
+  C: {
+    id: 'C',
+    dayName: 'Quarta-feira',
+    shortDay: 'QUA',
+    focus: 'Posteriores & Core',
+    color: 'from-purple-600 to-indigo-500',
+    exercises: [
+      {
+        id: 'c1',
+        name: 'Stiff - Barra',
+        group: 'Posterior',
+        setsCount: 4,
+        sets: [
+          { weight: '44', reps: '15', done: false },
+          { weight: '50', reps: '12', done: false },
+          { weight: '58', reps: '10', done: false },
+          { weight: '58', reps: '6-8', done: false }
+        ]
+      },
+      {
+        id: 'c2',
+        name: 'Cadeira Flexora - Máquina Articulada',
+        group: 'Posterior',
+        setsCount: 4,
+        sets: [
+          { weight: '65', reps: '12', done: false },
+          { weight: '70', reps: '10', done: false },
+          { weight: '75', reps: '6-8', done: false },
+          { weight: '75', reps: 'RM', done: false }
+        ]
+      },
+      {
+        id: 'c3',
+        name: 'Flexora Unilateral (Mesa/Cama)',
+        group: 'Posterior',
+        setsCount: 4,
+        sets: [
+          { weight: '10', reps: '12', done: false },
+          { weight: '13', reps: '8-10', done: false },
+          { weight: '14', reps: '6-8', done: false },
+          { weight: '14', reps: '6-8', done: false }
+        ]
+      },
+      {
+        id: 'c4',
+        name: 'Levantamento Terra - Barra Sumô',
+        group: 'Posterior / Glúteo',
+        setsCount: 3,
+        sets: [
+          { weight: '40', reps: '10-12', done: false },
+          { weight: '45', reps: '10-12', done: false },
+          { weight: '50', reps: '10-12', done: false }
+        ]
+      },
+      {
+        id: 'c5',
+        name: 'Abdominal com Rolinho',
+        group: 'Abdômen',
+        setsCount: 4,
+        sets: [
+          { weight: '0', reps: '10-12', done: false },
+          { weight: '0', reps: '10-12', done: false },
+          { weight: '0', reps: '10-12', done: false },
+          { weight: '0', reps: '10-12', done: false }
+        ]
+      },
+      {
+        id: 'c6',
+        name: 'Flexão Plantar - Leg Press',
+        group: 'Panturrilha',
+        setsCount: 4,
+        sets: [
+          { weight: '80', reps: 'RM', done: false },
+          { weight: '80', reps: 'RM', done: false },
+          { weight: '80', reps: 'RM', done: false },
+          { weight: '80', reps: 'RM', done: false }
+        ]
+      }
+    ]
+  },
+  D: {
+    id: 'D',
+    dayName: 'Quinta-feira',
+    shortDay: 'QUI',
+    focus: 'Peito, Tríceps & Bíceps',
+    color: 'from-amber-500 to-orange-600',
+    exercises: [
+      {
+        id: 'd1',
+        name: 'Crucifixo - Crossover Polia Alta',
+        group: 'Peitoral',
+        setsCount: 4,
+        sets: [
+          { weight: '20', reps: '10-12', done: false },
+          { weight: '24', reps: '10-12', done: false },
+          { weight: '26', reps: '8-10', done: false },
+          { weight: '26', reps: '8-10', done: false }
+        ]
+      },
+      {
+        id: 'd2',
+        name: 'Supino Inclinado com Halter',
+        group: 'Peitoral',
+        setsCount: 3,
+        sets: [
+          { weight: '28', reps: '10-12', done: false },
+          { weight: '28', reps: '10-12', done: false },
+          { weight: '28', reps: '10-12', done: false }
+        ]
+      },
+      {
+        id: 'd3',
+        name: 'Supino Reto Máquina',
+        group: 'Peitoral',
+        setsCount: 3,
+        sets: [
+          { weight: '30', reps: '10-12', done: false },
+          { weight: '40', reps: '8-10', done: false },
+          { weight: '49', reps: '8-10', done: false }
+        ]
+      },
+      {
+        id: 'd4',
+        name: 'Tríceps Pulley - Crossover Barra',
+        group: 'Tríceps',
+        setsCount: 4,
+        sets: [
+          { weight: '20', reps: '15', done: false },
+          { weight: '23', reps: '12', done: false },
+          { weight: '25', reps: '10', done: false },
+          { weight: '25', reps: '6-8', done: false }
+        ]
+      },
+      {
+        id: 'd5',
+        name: 'Tríceps Francês - Crossover Corda',
+        group: 'Tríceps',
+        setsCount: 3,
+        sets: [
+          { weight: '25', reps: '12', done: false },
+          { weight: '27', reps: '10', done: false },
+          { weight: '27', reps: '8', done: false }
+        ]
+      },
+      {
+        id: 'd6',
+        name: 'Rosca Alternada - Halter Inclinado',
+        group: 'Bíceps',
+        setsCount: 4,
+        sets: [
+          { weight: '14', reps: '14', done: false },
+          { weight: '14', reps: '14', done: false },
+          { weight: '14', reps: '14', done: false },
+          { weight: '14', reps: '14', done: false }
+        ]
+      },
+      {
+        id: 'd7',
+        name: 'Rosca Martelo - Crossover',
+        group: 'Bíceps',
+        setsCount: 4,
+        sets: [
+          { weight: '25', reps: '12', done: false },
+          { weight: '26', reps: '10', done: false },
+          { weight: '27', reps: '8', done: false },
+          { weight: '27', reps: '6', done: false }
+        ]
+      }
+    ]
+  },
+  E: {
+    id: 'E',
+    dayName: 'Sexta-feira',
+    shortDay: 'SEX',
+    focus: 'Glúteos & Perna Completo',
+    color: 'from-pink-600 to-rose-500',
+    exercises: [
+      {
+        id: 'e1',
+        name: 'Cadeira Abdutora - Tronco Reto',
+        group: 'Glúteo',
+        setsCount: 4,
+        sets: [
+          { weight: '90', reps: 'RM', done: false },
+          { weight: '94', reps: 'RM', done: false },
+          { weight: '94', reps: 'RM', done: false },
+          { weight: '94', reps: 'RM', done: false }
+        ]
+      },
+      {
+        id: 'e2',
+        name: 'Elevação Pélvica - Máquina',
+        group: 'Glúteo',
+        setsCount: 3,
+        sets: [
+          { weight: '27', reps: '12', done: false },
+          { weight: '28', reps: '10', done: false },
+          { weight: '30', reps: '8', done: false }
+        ]
+      },
+      {
+        id: 'e3',
+        name: 'Agachamento Sumô - Halter Step V',
+        group: 'Posterior / Glúteo',
+        setsCount: 3,
+        sets: [
+          { weight: '50', reps: '12', done: false },
+          { weight: '60', reps: '10', done: false },
+          { weight: '64', reps: '6-8', done: false }
+        ]
+      },
+      {
+        id: 'e4',
+        name: 'Búlgaro no Smith',
+        group: 'Perna / Glúteo',
+        setsCount: 3,
+        sets: [
+          { weight: '26', reps: '10', done: false },
+          { weight: '26', reps: '8-10', done: false },
+          { weight: '26', reps: '6-8', done: false }
+        ]
+      },
+      {
+        id: 'e5',
+        name: 'Leg Press 45°',
+        group: 'Quadríceps',
+        setsCount: 4,
+        sets: [
+          { weight: '170', reps: '12', done: false },
+          { weight: '180', reps: '10', done: false },
+          { weight: '188', reps: '8-10', done: false },
+          { weight: '188', reps: '8-10', done: false }
+        ]
+      }
+    ]
+  }
+};
+
+export default function App() {
+  // Navigation & Active States
+  const [activeTab, setActiveTab] = useState('workout'); // 'workout' | 'schedule' | 'stats' | 'profile'
+  const [activeDay, setActiveDay] = useState('A');
+  const [workouts, setWorkouts] = useState(() => {
+    const saved = localStorage.getItem('aquinoa_workouts_data');
+    return saved ? JSON.parse(saved) : INITIAL_WORKOUTS;
+  });
+
+  // Rest Timer State
+  const [timerSeconds, setTimerSeconds] = useState(0);
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [initialTimer, setInitialTimer] = useState(60);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const audioContextRef = useRef(null);
+
+  // Modal State for Adding/Editing Exercise
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingEx, setEditingEx] = useState(null);
+  const [newExName, setNewExName] = useState('');
+  const [newExGroup, setNewExGroup] = useState('Geral');
+  const [newExSetsCount, setNewExSetsCount] = useState(3);
+  const [newExDefaultWeight, setNewExDefaultWeight] = useState('20');
+  const [newExDefaultReps, setNewExDefaultReps] = useState('10-12');
+
+  // Load persistence
+  useEffect(() => {
+    localStorage.setItem('aquinoa_workouts_data', JSON.stringify(workouts));
+  }, [workouts]);
+
+  // Timer Countdown Logic
+  useEffect(() => {
+    let interval = null;
+    if (isTimerRunning && timerSeconds > 0) {
+      interval = setInterval(() => {
+        setTimerSeconds((prev) => prev - 1);
+      }, 1000);
+    } else if (timerSeconds === 0 && isTimerRunning) {
+      setIsTimerRunning(false);
+      playBeep();
+    }
+    return () => clearInterval(interval);
+  }, [isTimerRunning, timerSeconds]);
+
+  // Play Sound Alert
+  const playBeep = () => {
+    if (!soundEnabled) return;
+    try {
+      if (!audioContextRef.current) {
+        audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      const ctx = audioContextRef.current;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ctx.currentTime); // A5 note
+      gain.gain.setValueAtTime(0.1, ctx.currentTime);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.5);
+    } catch (e) {
+      console.log('Audio not supported or blocked');
+    }
+  };
+
+  const startRestTimer = (seconds) => {
+    setInitialTimer(seconds);
+    setTimerSeconds(seconds);
+    setIsTimerRunning(true);
+  };
+
+  const toggleTimer = () => {
+    if (timerSeconds === 0) setTimerSeconds(initialTimer);
+    setIsTimerRunning(!isTimerRunning);
+  };
+
+  const resetTimer = () => {
+    setIsTimerRunning(false);
+    setTimerSeconds(0);
+  };
+
+  // Toggle Set Complete
+  const toggleSetDone = (dayId, exerciseId, setIndex) => {
+    setWorkouts((prev) => {
+      const updated = { ...prev };
+      const day = updated[dayId];
+      const exIndex = day.exercises.findIndex((e) => e.id === exerciseId);
+      if (exIndex !== -1) {
+        const ex = day.exercises[exIndex];
+        ex.sets[setIndex].done = !ex.sets[setIndex].done;
+        
+        // Auto start timer if set completed
+        if (ex.sets[setIndex].done) {
+          startRestTimer(60);
+        }
+      }
+      return { ...updated };
+    });
+  };
+
+  // Update Set Weight or Reps
+  const updateSetDetail = (dayId, exerciseId, setIndex, field, value) => {
+    setWorkouts((prev) => {
+      const updated = { ...prev };
+      const day = updated[dayId];
+      const exIndex = day.exercises.findIndex((e) => e.id === exerciseId);
+      if (exIndex !== -1) {
+        day.exercises[exIndex].sets[setIndex][field] = value;
+      }
+      return { ...updated };
+    });
+  };
+
+  // Delete Exercise
+  const handleDeleteExercise = (dayId, exerciseId) => {
+    setWorkouts((prev) => {
+      const updated = { ...prev };
+      updated[dayId].exercises = updated[dayId].exercises.filter((e) => e.id !== exerciseId);
+      return { ...updated };
+    });
+  };
+
+  // Save or Add Exercise
+  const handleSaveExercise = () => {
+    if (!newExName.trim()) return;
+
+    if (editingEx) {
+      // Edit mode
+      setWorkouts((prev) => {
+        const updated = { ...prev };
+        const day = updated[activeDay];
+        const exIdx = day.exercises.findIndex((e) => e.id === editingEx.id);
+        if (exIdx !== -1) {
+          day.exercises[exIdx].name = newExName;
+          day.exercises[exIdx].group = newExGroup;
+        }
+        return { ...updated };
+      });
+    } else {
+      // Add mode
+      const newSets = Array.from({ length: Number(newExSetsCount) }, () => ({
+        weight: newExDefaultWeight,
+        reps: newExDefaultReps,
+        done: false
+      }));
+
+      const newExerciseObj = {
+        id: 'custom_' + Date.now(),
+        name: newExName,
+        group: newExGroup,
+        setsCount: Number(newExSetsCount),
+        sets: newSets
+      };
+
+      setWorkouts((prev) => {
+        const updated = { ...prev };
+        updated[activeDay].exercises.push(newExerciseObj);
+        return { ...updated };
+      });
+    }
+
+    closeModal();
+  };
+
+  const openAddModal = () => {
+    setEditingEx(null);
+    setNewExName('');
+    setNewExGroup('Geral');
+    setNewExSetsCount(3);
+    setNewExDefaultWeight('20');
+    setNewExDefaultReps('10-12');
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (ex) => {
+    setEditingEx(ex);
+    setNewExName(ex.name);
+    setNewExGroup(ex.group || 'Geral');
+    setNewExSetsCount(ex.sets.length);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEditingEx(null);
+  };
+
+  // Calculations for current day progress
+  const currentWorkout = workouts[activeDay];
+  const totalSets = currentWorkout.exercises.reduce((acc, ex) => acc + ex.sets.length, 0);
+  const completedSets = currentWorkout.exercises.reduce(
+    (acc, ex) => acc + ex.sets.filter((s) => s.done).length,
+    0
+  );
+  const workoutProgress = totalSets > 0 ? Math.round((completedSets / totalSets) * 100) : 0;
+
+  // Format Timer
+  const formatTime = (secs) => {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans pb-24 select-none">
+      {/* HEADER PRINCIPAL */}
+      <header className="sticky top-0 z-30 bg-slate-900/90 backdrop-blur-md border-b border-slate-800/80 px-4 py-3">
+        <div className="max-w-md mx-auto flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 font-bold text-white text-lg">
+              AQ
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <h1 className="font-bold text-slate-100 text-base leading-tight">Aquinoã Barbosa</h1>
+                <Sparkles className="w-4 h-4 text-cyan-400" />
+              </div>
+              <p className="text-xs text-slate-400">Atleta • Foco Hipertrofia</p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setSoundEnabled(!soundEnabled)}
+            className={`p-2 rounded-lg border text-xs flex items-center gap-1 transition-all ${
+              soundEnabled
+                ? 'bg-slate-800 border-slate-700 text-cyan-400'
+                : 'bg-slate-900 border-slate-800 text-slate-500'
+            }`}
+          >
+            {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+          </button>
+        </div>
+      </header>
+
+      {/* CONTEÚDO DA ABA SELECIONADA */}
+      <main className="max-w-md mx-auto px-4 pt-4">
+        
+        {/* ================= ABA TREINO DO DIA ================= */}
+        {activeTab === 'workout' && (
+          <div className="space-y-4">
+            {/* CARROSSEL DE DIAS (A - E) */}
+            <div className="flex justify-between gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+              {Object.keys(workouts).map((key) => {
+                const day = workouts[key];
+                const isActive = activeDay === key;
+                return (
+                  <button
+                    key={key}
+                    onClick={() => setActiveDay(key)}
+                    className={`flex-1 min-w-[62px] py-2.5 px-1 rounded-xl text-center transition-all border ${
+                      isActive
+                        ? `bg-gradient-to-b ${day.color} border-transparent text-white shadow-lg shadow-cyan-500/10 font-bold scale-[1.02]`
+                        : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
+                    }`}
+                  >
+                    <span className="block text-[10px] tracking-wider uppercase opacity-80">{day.shortDay}</span>
+                    <span className="block text-sm font-black">Treino {key}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* CARTÃO DE RESUMO DO DIA */}
+            <div className="relative overflow-hidden bg-slate-900 rounded-2xl border border-slate-800 p-4 shadow-xl">
+              <div className={`absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b ${currentWorkout.color}`} />
+              
+              <div className="flex justify-between items-start mb-2 pl-2">
+                <div>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-cyan-400">
+                    {currentWorkout.dayName}
+                  </span>
+                  <h2 className="text-xl font-black text-slate-100 flex items-center gap-2">
+                    Treino {currentWorkout.id} - {currentWorkout.focus}
+                  </h2>
+                </div>
+                <button
+                  onClick={openAddModal}
+                  className="bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 p-2 rounded-xl transition-all flex items-center gap-1 text-xs font-semibold"
+                >
+                  <Plus className="w-4 h-4" /> Exercício
+                </button>
+              </div>
+
+              {/* PROGRESSO DO TREINO */}
+              <div className="mt-3 pl-2">
+                <div className="flex justify-between text-xs text-slate-400 mb-1">
+                  <span>Progresso do Treino</span>
+                  <span className="font-bold text-slate-200">{completedSets} / {totalSets} Séries ({workoutProgress}%)</span>
+                </div>
+                <div className="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                  <div
+                    className={`h-full bg-gradient-to-r ${currentWorkout.color} transition-all duration-300`}
+                    style={{ width: `${workoutProgress}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* CRONÔMETRO DE DESCANSO FLUTUANTE / FIXO */}
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-3 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className={`p-2 rounded-xl ${isTimerRunning ? 'bg-amber-500/20 text-amber-400 animate-pulse' : 'bg-slate-800 text-slate-400'}`}>
+                  <Clock className="w-5 h-5" />
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-400 uppercase font-semibold block">Descanso entre Séries</span>
+                  <span className="text-lg font-black font-mono text-slate-100">
+                    {timerSeconds > 0 ? formatTime(timerSeconds) : '0:00'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                {[30, 60, 90, 120].map((sec) => (
+                  <button
+                    key={sec}
+                    onClick={() => startRestTimer(sec)}
+                    className="px-2 py-1 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700/50"
+                  >
+                    {sec}s
+                  </button>
+                ))}
+                {timerSeconds > 0 && (
+                  <button
+                    onClick={toggleTimer}
+                    className="p-2 rounded-lg bg-cyan-500 text-slate-950 hover:bg-cyan-400 transition-all ml-1"
+                  >
+                    {isTimerRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* LISTA DE EXERCÍCIOS */}
+            <div className="space-y-3">
+              {currentWorkout.exercises.length === 0 ? (
+                <div className="text-center py-8 bg-slate-900/50 rounded-2xl border border-dashed border-slate-800 text-slate-500">
+                  <Dumbbell className="w-8 h-8 mx-auto mb-2 opacity-40" />
+                  <p className="text-sm">Nenhum exercício cadastrado para este dia.</p>
+                </div>
+              ) : (
+                currentWorkout.exercises.map((ex, exIdx) => {
+                  const exDoneSets = ex.sets.filter((s) => s.done).length;
+                  const isExCompleted = exDoneSets === ex.sets.length;
+
+                  return (
+                    <div
+                      key={ex.id}
+                      className={`bg-slate-900 border rounded-2xl p-3.5 transition-all ${
+                        isExCompleted
+                          ? 'border-emerald-500/40 bg-slate-900/80'
+                          : 'border-slate-800 hover:border-slate-700'
+                      }`}
+                    >
+                      {/* HEADER DO EXERCÍCIO */}
+                      <div className="flex justify-between items-start mb-2.5">
+                        <div className="flex-1 pr-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-800 text-cyan-400 border border-slate-700">
+                              {ex.group || 'Geral'}
+                            </span>
+                            <span className="text-xs text-slate-400 font-mono">
+                              {exDoneSets}/{ex.sets.length} concluídos
+                            </span>
+                          </div>
+                          <h3 className="font-bold text-slate-100 text-sm mt-1 leading-snug">{ex.name}</h3>
+                        </div>
+
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => openEditModal(ex)}
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800"
+                          >
+                            <Edit2 className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteExercise(activeDay, ex.id)}
+                            className="p-1.5 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-slate-800"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* TABELA DE SÉRIES */}
+                      <div className="space-y-1.5">
+                        <div className="grid grid-cols-12 text-[10px] uppercase tracking-wider text-slate-500 font-semibold px-2 mb-1">
+                          <span className="col-span-2">Série</span>
+                          <span className="col-span-4 text-center">Carga (kg)</span>
+                          <span className="col-span-4 text-center">Reps</span>
+                          <span className="col-span-2 text-right">Status</span>
+                        </div>
+
+                        {ex.sets.map((set, setIdx) => (
+                          <div
+                            key={setIdx}
+                            className={`grid grid-cols-12 items-center p-1.5 rounded-xl transition-all ${
+                              set.done
+                                ? 'bg-emerald-500/10 border border-emerald-500/30'
+                                : 'bg-slate-950 border border-slate-800'
+                            }`}
+                          >
+                            {/* NÚMERO DA SÉRIE */}
+                            <span className="col-span-2 font-bold text-xs text-slate-400 pl-1">
+                              #{setIdx + 1}
+                            </span>
+
+                            {/* CARGA EDITÁVEL */}
+                            <div className="col-span-4 flex items-center justify-center px-1">
+                              <input
+                                type="text"
+                                value={set.weight}
+                                onChange={(e) =>
+                                  updateSetDetail(activeDay, ex.id, setIdx, 'weight', e.target.value)
+                                }
+                                className="w-16 bg-slate-800 border border-slate-700/80 rounded-lg text-center font-bold text-xs text-cyan-300 py-1 focus:outline-none focus:border-cyan-500"
+                              />
+                            </div>
+
+                            {/* REPS EDITÁVEIS */}
+                            <div className="col-span-4 flex items-center justify-center px-1">
+                              <input
+                                type="text"
+                                value={set.reps}
+                                onChange={(e) =>
+                                  updateSetDetail(activeDay, ex.id, setIdx, 'reps', e.target.value)
+                                }
+                                className="w-16 bg-slate-800 border border-slate-700/80 rounded-lg text-center font-semibold text-xs text-slate-200 py-1 focus:outline-none focus:border-cyan-500"
+                              />
+                            </div>
+
+                            {/* BOTÃO CONCLUIR */}
+                            <div className="col-span-2 flex justify-end pr-1">
+                              <button
+                                onClick={() => toggleSetDone(activeDay, ex.id, setIdx)}
+                                className={`p-1 rounded-lg transition-all ${
+                                  set.done ? 'text-emerald-400 scale-110' : 'text-slate-600 hover:text-slate-400'
+                                }`}
+                              >
+                                {set.done ? (
+                                  <CheckCircle2 className="w-5 h-5 fill-emerald-500/20" />
+                                ) : (
+                                  <Circle className="w-5 h-5" />
+                                )}
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ================= ABA AGENDA SEMANAL ================= */}
+        {activeTab === 'schedule' && (
+          <div className="space-y-4">
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+              <h2 className="text-lg font-bold text-slate-100 mb-1 flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-cyan-400" /> Agenda da Semana
+              </h2>
+              <p className="text-xs text-slate-400 mb-4">
+                Estrutura completa de segunda a sexta com cargas de referência do Aquinoã.
+              </p>
+
+              <div className="space-y-3">
+                {Object.keys(workouts).map((key) => {
+                  const day = workouts[key];
+                  return (
+                    <div
+                      key={key}
+                      onClick={() => {
+                        setActiveDay(key);
+                        setActiveTab('workout');
+                      }}
+                      className="bg-slate-950 border border-slate-800 hover:border-slate-700 rounded-xl p-3.5 flex items-center justify-between cursor-pointer group transition-all"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-xl bg-gradient-to-tr ${day.color} flex items-center justify-center font-black text-white text-sm shadow-md`}>
+                          {key}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-sm text-slate-200">{day.dayName}</span>
+                          </div>
+                          <span className="text-xs text-cyan-400 font-medium block">{day.focus}</span>
+                          <span className="text-[11px] text-slate-500">{day.exercises.length} exercícios cadastrados</span>
+                        </div>
+                      </div>
+
+                      <ChevronRight className="w-5 h-5 text-slate-600 group-hover:text-cyan-400 group-hover:translate-x-1 transition-all" />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ================= ABA EVOLUÇÃO & CARGAS ================= */}
+        {activeTab === 'stats' && (
+          <div className="space-y-4">
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+              <h2 className="text-lg font-bold text-slate-100 mb-1 flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-cyan-400" /> Histórico de Cargas
+              </h2>
+              <p className="text-xs text-slate-400 mb-4">
+                Acompanhe as maiores cargas registradas por exercício nos treinos.
+              </p>
+
+              <div className="space-y-3">
+                {Object.keys(workouts).map((dayKey) => {
+                  const day = workouts[dayKey];
+                  return (
+                    <div key={dayKey} className="bg-slate-950 border border-slate-800/80 rounded-xl p-3">
+                      <div className="flex items-center gap-2 mb-2 pb-2 border-b border-slate-800">
+                        <span className="text-xs font-black px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+                          Treino {dayKey}
+                        </span>
+                        <span className="text-xs font-bold text-slate-300">{day.focus}</span>
+                      </div>
+
+                      <div className="space-y-2">
+                        {day.exercises.map((ex) => {
+                          const maxWeight = ex.sets.reduce((max, s) => {
+                            const val = parseFloat(s.weight) || 0;
+                            return val > max ? val : max;
+                          }, 0);
+
+                          return (
+                            <div key={ex.id} className="flex justify-between items-center text-xs">
+                              <span className="text-slate-300 font-medium truncate max-w-[200px]">
+                                {ex.name}
+                              </span>
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-[11px] text-slate-500">Máx:</span>
+                                <span className="font-bold text-cyan-400 bg-slate-900 border border-slate-800 px-2 py-0.5 rounded font-mono">
+                                  {maxWeight > 0 ? `${maxWeight} kg` : 'Peso Corp.'}
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ================= ABA PERFIL & CONFIGURAÇÕES ================= */}
+        {activeTab === 'profile' && (
+          <div className="space-y-4">
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 mx-auto flex items-center justify-center font-black text-2xl text-white shadow-xl shadow-cyan-500/20 mb-3">
+                AQ
+              </div>
+              <h2 className="text-lg font-bold text-slate-100">Aquinoã Barbosa</h2>
+              <p className="text-xs text-slate-400">Plano de Treino Semanal Personalizado</p>
+
+              <div className="grid grid-cols-2 gap-3 mt-5 pt-4 border-t border-slate-800">
+                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-left">
+                  <span className="text-[10px] text-slate-500 uppercase font-semibold block">Divisão</span>
+                  <span className="font-bold text-sm text-cyan-400">A - B - C - D - E</span>
+                </div>
+                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-left">
+                  <span className="text-[10px] text-slate-500 uppercase font-semibold block">Frequência</span>
+                  <span className="font-bold text-sm text-slate-200">5x por semana</span>
+                </div>
+              </div>
+
+              <div className="mt-5 space-y-2">
+                <button
+                  onClick={() => {
+                    if (confirm('Deseja restaurar as cargas e exercícios originais do treino?')) {
+                      setWorkouts(INITIAL_WORKOUTS);
+                      localStorage.removeItem('aquinoa_workouts_data');
+                    }
+                  }}
+                  className="w-full bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 font-semibold py-2.5 rounded-xl text-xs transition-all"
+                >
+                  Restaurar Dados Iniciais de Treino
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* MODAL PARA ADICIONAR / EDITAR EXERCÍCIO */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-5 space-y-4 shadow-2xl">
+            <div className="flex justify-between items-center border-b border-slate-800 pb-3">
+              <h3 className="font-bold text-slate-100 text-base">
+                {editingEx ? 'Editar Exercício' : `Novo Exercício - Treino ${activeDay}`}
+              </h3>
+              <button onClick={closeModal} className="text-slate-400 hover:text-slate-200">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs font-semibold text-slate-400 block mb-1">Nome do Exercício</label>
+                <input
+                  type="text"
+                  placeholder="Ex: Supino Inclinado"
+                  value={newExName}
+                  onChange={(e) => setNewExName(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-slate-400 block mb-1">Grupo Muscular</label>
+                <select
+                  value={newExGroup}
+                  onChange={(e) => setNewExGroup(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500"
+                >
+                  <option value="Quadríceps">Quadríceps</option>
+                  <option value="Posterior">Posterior</option>
+                  <option value="Glúteo">Glúteo</option>
+                  <option value="Costas">Costas</option>
+                  <option value="Ombro">Ombro</option>
+                  <option value="Peitoral">Peitoral</option>
+                  <option value="Tríceps">Tríceps</option>
+                  <option value="Bíceps">Bíceps</option>
+                  <option value="Panturrilha">Panturrilha</option>
+                  <option value="Abdômen">Abdômen</option>
+                </select>
+              </div>
+
+              {!editingEx && (
+                <>
+                  <div className="grid grid-cols-3 gap-2">
+                    <div>
+                      <label className="text-xs font-semibold text-slate-400 block mb-1">Séries</label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="8"
+                        value={newExSetsCount}
+                        onChange={(e) => setNewExSetsCount(e.target.value)}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 text-center focus:outline-none focus:border-cyan-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-slate-400 block mb-1">Carga (kg)</label>
+                      <input
+                        type="text"
+                        value={newExDefaultWeight}
+                        onChange={(e) => setNewExDefaultWeight(e.target.value)}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 text-center focus:outline-none focus:border-cyan-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-slate-400 block mb-1">Reps</label>
+                      <input
+                        type="text"
+                        value={newExDefaultReps}
+                        onChange={(e) => setNewExDefaultReps(e.target.value)}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 text-center focus:outline-none focus:border-cyan-500"
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+
+            <div className="flex gap-2 pt-2">
+              <button
+                onClick={closeModal}
+                className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-2.5 rounded-xl text-xs transition-all"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleSaveExercise}
+                className="flex-1 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold py-2.5 rounded-xl text-xs transition-all shadow-lg shadow-cyan-500/20"
+              >
+                Salvar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* BOTTOM NAVIGATION BAR */}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-slate-900/95 backdrop-blur-lg border-t border-slate-800/80 px-4 py-2">
+        <div className="max-w-md mx-auto flex justify-around items-center">
+          <button
+            onClick={() => setActiveTab('workout')}
+            className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all ${
+              activeTab === 'workout' ? 'text-cyan-400 font-bold' : 'text-slate-500 hover:text-slate-300'
+            }`}
+          >
+            <Dumbbell className="w-5 h-5" />
+            <span className="text-[10px]">Treino</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('schedule')}
+            className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all ${
+              activeTab === 'schedule' ? 'text-cyan-400 font-bold' : 'text-slate-500 hover:text-slate-300'
+            }`}
+          >
+            <Calendar className="w-5 h-5" />
+            <span className="text-[10px]">Agenda</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('stats')}
+            className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all ${
+              activeTab === 'stats' ? 'text-cyan-400 font-bold' : 'text-slate-500 hover:text-slate-300'
+            }`}
+          >
+            <TrendingUp className="w-5 h-5" />
+            <span className="text-[10px]">Evolução</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('profile')}
+            className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all ${
+              activeTab === 'profile' ? 'text-cyan-400 font-bold' : 'text-slate-500 hover:text-slate-300'
+            }`}
+          >
+            <User className="w-5 h-5" />
+            <span className="text-[10px]">Perfil</span>
+          </button>
+        </div>
+      </nav>
+    </div>
+  );
+}
