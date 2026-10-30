@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -90,7 +89,7 @@
             const formatTime = (seconds) => {
                 const mins = Math.floor(seconds / 60);
                 const secs = seconds % 60;
-                return ${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')};
+                return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
             };
 
             const handleUpdateLoad = (day, id, newLoad) => {
@@ -124,7 +123,7 @@
                             <button
                                 key={day}
                                 onClick={() => setActiveDay(day)}
-                                className={px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${activeDay === day ? 'bg-emerald-500 text-zinc-950 shadow-md shadow-emerald-900/20' : 'bg-zinc-900 text-zinc-400 border border-zinc-800'}}
+                                className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${activeDay === day ? 'bg-emerald-500 text-zinc-950 shadow-md shadow-emerald-900/20' : 'bg-zinc-900 text-zinc-400 border border-zinc-800'}`}
                             >
                                 {day.split(" ")[0]}
                             </button>
@@ -154,12 +153,12 @@
                                         <input 
                                             type="text" 
                                             defaultValue={ex.load}
-                                            id={load-${ex.id}}
+                                            id={`load-${ex.id}`}
                                             className="bg-zinc-950 border border-zinc-700 rounded px-2 py-1 text-xs text-white flex-1"
                                         />
                                         <button 
                                             onClick={() => {
-                                                const val = document.getElementById(load-${ex.id}).value;
+                                                const val = document.getElementById(`load-${ex.id}`).value;
                                                 handleUpdateLoad(activeDay, ex.id, val);
                                             }}
                                             className="bg-emerald-600 text-white px-3 py-1 rounded text-xs font-medium"
@@ -180,5 +179,3 @@
 </body>
 </html>
 
-
-        
